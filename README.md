@@ -1,18 +1,14 @@
-# SwapNet
-**Unofficial PyTorch reproduction of SwapNet.**
+# MGVTON
+**Unofficial PyTorch reproduction of MGVTON.**
 
-<p align="center">
-<img src="media/example.png" alt="SwapNet example" width=600>
-<img src="media/diagram.png" alt="SwapNet diagram" width=600>
-</p>
 
-For more than a year, I've put all my efforts into reproducing [SwapNet (Raj et al. 2018)](http://www.eye.gatech.edu/swapnet/paper.pdf). Since an official codebase has not been released, by making my implementation public, I hope to contribute to transparency and openness in the Deep Learning community.
+I'm reproducing [MGVTON] (https://arxiv.org/pdf/1902.11026.pdf). The implementation is based on the reproduction of SWAPNET (https://github.com/andrewjong/SwapNet)
 
 ## Contributing
-I'd welcome help to improve the DevOps of this project. The current installation process is complicated and prone to version incompatibility. Unfortunately I have other life priorities right now and don't have much time to resolve these particular issues. If you'd like to contribute, please look for the [help-wanted](https://github.com/andrewjong/SwapNet/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22) label in the Issues. Please feel free to email me for questions as well.
+
+The following instruction is from author of SwapNet:
 
 # Installation
-I have only tested this build with Linux! If anyone wants to contribute instructions for Windows/MacOS, be my guest :)
 
 This repository is built with PyTorch. I recommend installing dependencies via [conda](https://docs.conda.io/en/latest/).
 
@@ -141,40 +137,29 @@ python inference.py --checkpoint checkpoints/deep_fashion \
 ```
 Where SOURCE contains the clothing you want to transfer, and TARGET contains the person to place clothing on.
 
-# Comparisons to Original SwapNet
+# Comparisons to Original MGVTON
 ### Similarities
-- Warp Stage
-  - [x] Per-channel random affine augmentation for cloth inputs
-  - [x] RGB images for body segmentations
-  - [x] Dual U-Net warp architecture
-  - [x] Warp loss (cross-entropy plus small adversarial loss)
-- Texture Stage
-  - [x] ROI pooling
-  - [x] Texture module architecture
-  - mostly everything else is the same
+- Stage I
+  - [x] Test
+- Stage II
+  - [x] Test
+- Stage III: Refinement render
+  - [x] Test
 
 ### Differences
-- Warp Stage
-  - Body segmentation: Neural Body Fitting instead of Unite the People (note NBF doesn't work well on cropped bodies)
-  - I store cloth segmentations as a flat 2D map of numeric labels, then expand this into 1-hot encoded tensors at runtime. In the original SwapNet, they used probability maps, but this took up too much storage space (tens of dozens of GB) on my computer.
-  - Option to train on video data. For video data, the different frames provide additional "augmentation" for input cloth in the warp stage. Use `--data_mode video` to enable this.
-- Texture Stage
-  - Cloth segmentation: LIP_JPPNet instead of LIP_SSL
-  - Currently VGG feature loss prevents convergence, need to debug!
-- Overall
-  - Hyperparameters most likely; the hyperparameters were not listed in the original paper, so I had to experiment with these values.
-  - Implemented random label smoothing for better GAN stability
+
 
 ### TODO:
-- [ ] Copy face data from target to generated output during inference ("we copy the face and hair pixels from B into the result")
-- [ ] Match texture quality produced in original paper (likely due to Feature Loss)
-- [ ] Test DRAGAN penalty and other advanced GAN losses
+- [ ] Implement Stage I: generator and Discriminator
+- [ ] Implement Geometric matching module GMM(body shape, target cloth mask) --> warped cloth mask
+- [ ] Implement Geometric Matcher GMatcher(References parsing) --> Synthesys Parsing
+- [ ] Implement Warp-GAN: Generator and Discriminator
+- [ ] Implementation of refinement render
+- [ ] Add regularize to GMM and GMatcher
+- [ ] DeformableGAN --> Decomposed DeformableGAN
 
 # What's Next?
-I plan to keep improving virtual try-on in my own research project, and aim to release something by March or April 2020. (I've already made some progress which is scheduled to be published in the upcoming HPCS 2019 proceedings, but I aim to contribute more.) Stay tuned.
+
 
 # Credits
-- The layout of this repository is strongly influenced by Jun-Yan Zhu's [pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix) repository, though I've implemented significant changes. Many thanks to their team for open sourcing their code.
-- Many thanks to Amit Raj, the main author of SwapNet, for patiently responding to my questions throughout the year.
-- Many thanks to Khiem Pham for his helpful experiments on the warp stage and contribution to this repository.
-- Thank you Dr. Teng-Sheng Moh for advising this project.
+
