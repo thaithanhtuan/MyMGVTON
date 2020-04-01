@@ -52,7 +52,7 @@ class WarpModel(BaseGAN):
         BaseGAN.__init__(self, opt)
 
         # TODO: decode visuals for cloth
-        self.visual_names = ["inputs_decoded", "bodys_unnormalized", "fakes_decoded"]
+        self.visual_names = ["fakes_decoded"]
 
         if self.is_train:
             self.visual_names.append(
@@ -71,8 +71,8 @@ class WarpModel(BaseGAN):
                 self.loss_names += ["G_ce"]
 
     def compute_visuals(self):
-        self.inputs_decoded = decode_cloth_labels(self.inputs)
-        self.bodys_unnormalized = unnormalize(self.bodys, *self.opt.body_norm_stats)
+        #
+
         self.targets_decoded = decode_cloth_labels(self.targets)
         self.fakes_decoded = decode_cloth_labels(self.fakes)
 
