@@ -46,13 +46,8 @@ class WarpModel(BaseGAN):
             opt:
         """
         # 3 for RGB
-        self.body_channels = (
-            opt.body_channels if opt.body_representation == "labels" else 3
-        )
-        # 3 for RGB
-        self.cloth_channels = (
-            opt.cloth_channels if opt.cloth_representation == "labels" else 3
-        )
+        self.input_chanels = 24
+
 
         BaseGAN.__init__(self, opt)
 
@@ -86,7 +81,7 @@ class WarpModel(BaseGAN):
         The generator is the Warp Module.
         """
         return WarpModule(
-            body_channels=self.body_channels, cloth_channels=self.cloth_channels
+            input_chanels=self.input_chanels
         )
 
     def get_D_inchannels(self):
@@ -94,17 +89,14 @@ class WarpModel(BaseGAN):
         The Warp stage discriminator is a conditional discriminator. 
         This means we concatenate the generated warped cloth with the body segmentation.
         """
-        return self.cloth_channels + self.body_channels
+        return self.input_chanels + 20
 
     def set_input(self, input):
-        self.bodys = input["bodys"].to(self.device)
-        self.inputs = input["input_cloths"].to(self.device)
-        self.targets = input["target_cloths"].to(self.device)
-
-        self.image_paths = tuple(zip(input["cloth_paths"], input["body_paths"]))
+        self.agnostic = input["agnostic"].to(self.device)
+        self.targets = input["parse_arrayt"].to(self.device)
 
     def forward(self):
-        self.fakes = self.net_generator(self.bodys, self.inputs)
+        self.fakes = self.net_generator(self.agnostic)
 
     def backward_D(self):
         """
@@ -112,11 +104,11 @@ class WarpModel(BaseGAN):
         the discriminator. Concats the bodys with the cloth
         """
         # calculate fake
-        conditioned_fake = torch.cat((self.bodys, self.fakes), 1)
+        conditioned_fake = torch.cat((self.agnostic, self.fakes), 1)
         pred_fake = self.net_discriminator(conditioned_fake.detach())
         self.loss_D_fake = self.criterion_GAN(pred_fake, False)
         # calculate real
-        conditioned_real = torch.cat((self.bodys, self.targets), 1)
+        conditioned_real = torch.cat((self.agnostic, self.targets), 1)
         pred_real = self.net_discriminator(conditioned_real)
         self.loss_D_real = self.criterion_GAN(pred_real, True)
 
@@ -154,7 +146,7 @@ class WarpModel(BaseGAN):
             self.loss_G_ce = loss_ce  # store loss_ce
 
             # calculate adversarial loss
-            conditioned_fake = torch.cat((self.bodys, self.fakes), 1)
+            conditioned_fake = torch.cat((self.agnostic, self.fakes), 1)
             pred_fake = self.net_discriminator(conditioned_fake)
             self.loss_G_gan = self.criterion_GAN(pred_fake, True) * self.opt.lambda_gan
 
