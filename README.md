@@ -113,6 +113,11 @@ Where SOURCE contains the clothing you want to transfer, and TARGET contains the
 - [ ] Add bottoms, with sample short and long pants or short and long skirts.
 - [ ] Increase the weights of gan loss and check the results
 - [ ] Think to change the input and network structures. For example. Mask input instead of color cloth input. And the effects of residual network. by comparing the results without it.
+- [ ] Change the weight on loss of difference part of clothes. 
++ boundary focus more
++ base on average area all the dataset (statistical) ==> weight on loss of each human part label
++ soft weight, some clothes on same body part effect the weight on loss ==> skirt and pant on same bottom...
+
 ### Stage II
 
 
