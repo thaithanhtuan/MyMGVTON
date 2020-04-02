@@ -108,6 +108,12 @@ Where SOURCE contains the clothing you want to transfer, and TARGET contains the
 - [ ] DeformableGAN --> Decomposed DeformableGAN
 
 # What's Next?
+### Stage I
+- [ ] Check generated parsing performance, especially compare with the paper and others
+- [ ] Add bottoms, with sample short and long pants or short and long skirts.
+- [ ] Increase the weights of gan loss and check the results
+- [ ] Think to change the input and network structures. For example. Mask input instead of color cloth input. And the effects of residual network. by comparing the results without it.
+### Stage II
 
 
 # Credits
